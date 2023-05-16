@@ -13,12 +13,7 @@ public class Bullet : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        GameObject collidedWith = collision.gameObject;
-
-        if (collidedWith.tag != "Wall")
-        {
-            Destroy(collidedWith);
-            Destroy(gameObject);
-        }
+        Destroy(collision.gameObject);
+        Destroy(gameObject);
     }
 }
