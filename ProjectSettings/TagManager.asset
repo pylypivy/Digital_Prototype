@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wall
+  - Bullet
+  - Seat
+  - Enemy
+  - EnemyGun
+  - WinText
   layers:
   - Default
   - TransparentFX

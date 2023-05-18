@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
+    public float rotationSpeed;
     public float groundDrag;
     public float jumpForce;
     public float jumpCooldown;
@@ -42,8 +43,19 @@ public class PlayerMovement : MonoBehaviour
     private void MovePlayer()
     {
         // calculate movement direction
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
 
+        moveDirection = new Vector3(horizontalInput, 0, verticalInput);
+        moveDirection.Normalize();
+
+        transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+
+        if (moveDirection != Vector3.zero)
+        {
+            Quaternion toRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
+        }
 
         // on ground
         if (grounded)

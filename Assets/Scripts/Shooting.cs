@@ -5,15 +5,16 @@ using UnityEngine;
 public class Shooting : MonoBehaviour
 {
     public Transform bulletSpawnPoint;
-    public GameObject bulletPrefab;
+    public Rigidbody bulletPrefab;
     public float bulletSpeed = 10;
+    public KeyCode shootKey = KeyCode.Mouse0;
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(shootKey))
         {
             var bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
-            bullet.GetComponent<Rigidbody>().velocity = bulletSpawnPoint.forward * bulletSpeed;
+            bullet.velocity = bulletSpawnPoint.forward * bulletSpeed;
         }
     }
 }

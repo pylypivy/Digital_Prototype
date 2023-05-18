@@ -4,33 +4,79 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Inscribed")]
-    public float speed = 1f;
-    public float leftAndRightEdge = 10f;
-    public float changeDirChance = 0.1f;
+    public Transform player;
+    public Transform bulletSpawnPoint;
+    public Rigidbody bulletPrefab;
+    public float shootSpeed = 10;
+
+    private float lastAttackTime = 0f;
+    private float fireRate = 0.5f;
+    public float playerDistance;
+    public float awareAI = 10f;
+    public float AIMoveSpeed;
+    public float damping = 6.0f;
+
+    public Transform[] navPoint;
+    public UnityEngine.AI.NavMeshAgent agent;
+    public int destPoint = 0;
+    public Transform goal;
+
     void Start()
     {
+        UnityEngine.AI.NavMeshAgent agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        agent.destination = goal.position;
 
+        agent.autoBraking = false;
     }
+
     void Update()
     {
-        Vector3 pos = transform.position;
-        pos.x += speed * Time.deltaTime;
-        transform.position = pos;
-        if (pos.x < -leftAndRightEdge)
+        playerDistance = Vector3.Distance(player.position, transform.position);
+
+        if (playerDistance < awareAI)
         {
-            speed = Mathf.Abs(speed);//move right
+            //LookAtPlayer();
+            if(playerDistance < 2f & Time.time - lastAttackTime >= 1f / fireRate)
+            {
+                shootBullet();
+                lastAttackTime = Time.time;
+            }
+            else
+            {
+                GotoNextPoint();
+            }
         }
-        else if (pos.x > leftAndRightEdge)
+        if (agent.remainingDistance < 0.5f)
         {
-            speed = -Mathf.Abs(speed);//move left
+            GotoNextPoint();
         }
     }
+
+/*    void LookAtPlayer()
+    {
+        transform.LookAt(player);
+    }
+*/
+
+    void GotoNextPoint()
+    {
+        if (navPoint.Length == 0)
+        {
+            return;
+        }
+        agent.destination = navPoint[destPoint].position;
+        destPoint = (destPoint + 1) % navPoint.Length;
+    }
+
+    void shootBullet()
+    {
+        var projectile = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        //Shoot the Bullet in the forward direction of the player
+        projectile.velocity = bulletSpawnPoint.forward * shootSpeed;
+    }
+
     void FixedUpdate()
     {
-        if (Random.value < changeDirChance)
-        {
-            speed *= -1;
-        }
+        
     }
 }
